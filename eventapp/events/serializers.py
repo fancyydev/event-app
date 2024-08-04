@@ -28,11 +28,17 @@ class ActivityListSerializer(serializers.ModelSerializer):
         
 class ActivityUserSelectionSerializer(serializers.ModelSerializer):
     is_selected = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Activity
         fields = ['id', 'title_activity', 'slug', 'description', 'date_time', 'event', 'is_selected']
 
     def get_is_selected(self, obj):
         user = self.context['user']
+        #Agregar al contexto el evento
         return obj.scheduled_activities.filter(user=user).exists()
+    
+class ScheduleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Schedule
+        fields = ['id', 'user', 'activity', 'created_at']

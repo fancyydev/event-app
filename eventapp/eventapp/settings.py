@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'events.apps.EventsConfig',
     'accounts.apps.AccountsConfig',
+    'geodata.apps.GeodataConfig',
 ]
 
 MIDDLEWARE = [
