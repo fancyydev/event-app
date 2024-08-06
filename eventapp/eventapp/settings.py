@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'events.apps.EventsConfig',
     'accounts.apps.AccountsConfig',
     'geodata.apps.GeodataConfig',

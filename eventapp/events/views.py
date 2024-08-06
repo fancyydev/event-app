@@ -11,6 +11,8 @@ from accounts.models import CustomUser
 
 from django.utils import timezone
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
 class ActivityListView(APIView):
@@ -27,12 +29,14 @@ class ActivityListView(APIView):
             return Response({'error': 'No categories found'}, status=status.HTTP_404_NOT_FOUND)
 
 class ActivityListByUser(APIView):
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
-    def get(self, request, id_user, format=None):
+    def get(self, request, format=None):
         # Obtener el usuario de la base de datos (asegúrate de manejar la excepción si el usuario no existe)
         try:
-            user = CustomUser.objects.get(pk=id_user)
+            #user = CustomUser.objects.get(pk=id_user)
+            user = request.user
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -45,12 +49,14 @@ class ActivityListByUser(APIView):
         return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
 
 class ActiveActivityListByUser(APIView):
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
-    def get(self, request, id_user, format=None):
+    def get(self, request, format=None):
         # Obtener el usuario de la base de datos (asegúrate de manejar la excepción si el usuario no existe)
         try:
-            user = CustomUser.objects.get(pk=id_user)
+            #user = CustomUser.objects.get(pk=id_user)
+            user = request.user
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
@@ -67,11 +73,13 @@ class ActiveActivityListByUser(APIView):
 
 
 class AssignUserActivity(APIView):
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
     
-    def post(self, request, id_user, id_activity, format=None):
+    def post(self, request, id_activity, format=None):
         try:
-            user = CustomUser.objects.get(pk=id_user)
+            user = request.user
             activity = Activity.objects.get(id=id_activity)
             schedule, created = Schedule.objects.get_or_create(user=user, activity=activity)
             if created:
@@ -85,11 +93,12 @@ class AssignUserActivity(APIView):
             return Response({'error': 'Activity not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class RemoveUserActivity(APIView):
-    permission_classes = (permissions.AllowAny,)
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
-    def delete(self, request, id_user, id_activity, format=None):
+    def delete(self, request, id_activity, format=None):
         try:
-            user = CustomUser.objects.get(pk=id_user)
+            user = request.user
             activity = Activity.objects.get(id=id_activity)
             schedule = Schedule.objects.get(user=user, activity=activity)
             schedule.delete()
