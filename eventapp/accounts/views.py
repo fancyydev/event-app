@@ -82,6 +82,7 @@ class PasswordRecovery(APIView):
             email_body,
             settings.DEFAULT_FROM_EMAIL,
             [email],
+            html_message=email_body 
         )
 
         return Response({"detail": "Password reset email has been sent."}, status=status.HTTP_200_OK)
