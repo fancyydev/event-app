@@ -141,3 +141,13 @@ MEDIA_URL = '/media/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#Configuracion para mandar correos y recuperar contraseña
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+#Configuracion para el envio de correos
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'davidfregosoleon12@gmail.com'
+#Contraseña de aplicaciones de google
+EMAIL_HOST_PASSWORD = 'dwqw eqdj tant jozx'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
