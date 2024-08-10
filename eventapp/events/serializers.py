@@ -14,7 +14,6 @@ class EventSerializer(serializers.ModelSerializer):
         ]
 
 class ActivityListSerializer(serializers.ModelSerializer):
-    event = EventSerializer()
     class Meta:
         model = Activity
         fields = [
@@ -23,6 +22,7 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'slug',
             'description',
             'date_time',
+            'author',
             'event',
         ]
         
@@ -31,7 +31,7 @@ class ActivityUserSelectionSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Activity
-        fields = ['id', 'title_activity', 'slug', 'description', 'date_time', 'event', 'is_selected']
+        fields = ['id', 'title_activity', 'slug', 'description', 'date_time', 'author', 'event', 'is_selected']
 
     def get_is_selected(self, obj):
         user = self.context['user']

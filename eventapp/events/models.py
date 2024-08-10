@@ -52,6 +52,8 @@ class Activity(models.Model):
     slug = models.SlugField(max_length=250)
     description = models.TextField()
     date_time = models.DateTimeField()
+    author = models.CharField(max_length=250, default="-")
+    
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_activities')
     # Como puedo hacer para mostrar solo los cuartos que pertenecen al event seleccionado en el admin
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='rooms_activities')

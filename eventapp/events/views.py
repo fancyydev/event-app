@@ -13,6 +13,8 @@ from django.utils import timezone
 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
+
+from django.http import FileResponse, Http404
 # Create your views here.
 
 class ActivityListView(APIView):
@@ -47,6 +49,19 @@ class ActivityListByUser(APIView):
         serializer = ActivityUserSelectionSerializer(activities, many=True, context={'user': user})
         
         return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
+
+class ActiveProgramEvent(APIView):
+    def get(self, request, format=None):
+        
+        now  = timezone.now().date()
+        event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
+        if event == None:
+            raise Http404("Event not found.")
+        if event.program:
+            return FileResponse(event.program.open(), as_attachment=True, filename=event.program.name)
+        else:
+            return Response({"detail": "No program found for this event."}, status=status.HTTP_404_NOT_FOUND)
+       
 
 class ActiveActivityListByUser(APIView):
     authentication_classes = [TokenAuthentication]
