@@ -39,6 +39,15 @@ class Event(models.Model):
         self.clean()
         super(Event, self).save(*args, **kwargs)
     
+class Sponsor(models.Model):
+    name = models.CharField(max_length=250, verbose_name="Sponsor Name")
+    link = models.URLField(max_length=500, verbose_name="Sponsor Link")
+    logo = models.ImageField(upload_to='sponsors/logos/', verbose_name="Sponsor Logo")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_sponsors')
+
+    def __str__(self):
+        return self.name
+    
 class Room(models.Model):
     name_room = models.CharField(max_length=250)
     # Relacionar habitaciones con event

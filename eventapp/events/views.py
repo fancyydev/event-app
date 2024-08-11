@@ -4,9 +4,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework import permissions
+from rest_framework.exceptions import NotFound
 
-from .models import Event, Activity, Schedule
-from .serializers import ActivityListSerializer, ActivityUserSelectionSerializer, ScheduleSerializer
+from .models import Event, Activity, Schedule, Sponsor
+from .serializers import ActivityListSerializer, ActivityUserSelectionSerializer, ScheduleSerializer, SponsorSerializer
 from accounts.models import CustomUser
 
 from django.utils import timezone
@@ -50,6 +51,20 @@ class ActivityListByUser(APIView):
         
         return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
 
+class ActiveSponsorsEvent(APIView):
+    def get(self, request, format=None):
+        now  = timezone.now().date()
+        event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
+        if event == None:
+            raise Http404("Event not found.")
+        sponsors = Sponsor.objects.filter(event = event)
+        if not sponsors.exists():
+            raise NotFound('No sponsors found for this event.')
+        
+        serializer = SponsorSerializer(sponsors, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        
 class ActiveProgramEvent(APIView):
     def get(self, request, format=None):
         
@@ -61,7 +76,7 @@ class ActiveProgramEvent(APIView):
             return FileResponse(event.program.open(), as_attachment=True, filename=event.program.name)
         else:
             return Response({"detail": "No program found for this event."}, status=status.HTTP_404_NOT_FOUND)
-       
+        
 
 class ActiveActivityListByUser(APIView):
     authentication_classes = [TokenAuthentication]

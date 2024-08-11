@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, Activity, Schedule
+from .models import Event, Activity, Schedule, Sponsor
 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,3 +42,16 @@ class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Schedule
         fields = ['id', 'user', 'activity', 'created_at']
+        
+class SponsorSerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Sponsor
+        fields = ['name', 'link', 'logo_url', 'event']
+
+    def get_logo_url(self, obj):
+        request = self.context.get('request')
+        if obj.logo and hasattr(obj.logo, 'url'):
+            return request.build_absolute_uri(obj.logo.url)
+        return None
