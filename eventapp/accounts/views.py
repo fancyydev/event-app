@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import CustomUserSerializer
+from .serializers import CustomUserSerializer, CustomRegisterSerializer
 from rest_framework import status
 from .models import CustomUser
 
@@ -36,7 +36,7 @@ class Login(APIView):
     
 class Register(APIView):
     def post(self, request, format = None):
-        serializer = CustomUserSerializer(data=request.data)
+        serializer = CustomRegisterSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             
