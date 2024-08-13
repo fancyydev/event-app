@@ -1,4 +1,4 @@
-from .views import Login, Register, PasswordRecovery
+from .views import Login, Register, PasswordRecovery, GenerateReportView
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('password_reset_done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('password_reset_complete', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
+    path('report/<int:event_id>/', GenerateReportView.as_view(), name='generate_report'),
 ]

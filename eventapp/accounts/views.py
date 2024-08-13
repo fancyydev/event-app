@@ -21,6 +21,16 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.urls import reverse
 
+#Imports necesarios para crear el reporte
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.lib.units import inch 
+from events.models import Event
+from django.http import HttpResponse
+import io
+
 class Login(APIView):
     def post(self, request, format=None):
         user = get_object_or_404(CustomUser, email = request.data['email'])
@@ -87,3 +97,94 @@ class PasswordRecovery(APIView):
         )
 
         return Response({"detail": "Password reset email has been sent."}, status=status.HTTP_200_OK)
+
+class GenerateReportView(APIView):
+    def get(self, request, event_id):
+        # Obtener el evento
+        try:
+            event = Event.objects.get(id=event_id)
+        except Event.DoesNotExist:
+            return HttpResponse("Evento no encontrado", status=404)
+
+        # Obtener usuarios registrados dentro de las fechas del evento
+        users = CustomUser.objects.filter(
+            created__date__range=[event.initial_date, event.end_date]
+        ).values('email', 'name', 'phone', 'occupation', 'company',
+                 'municipality__name', 'state__name', 'country__name')
+        
+        user_count = users.count()
+        
+        # Crear el PDF en memoria
+        buffer = io.BytesIO()
+        doc = SimpleDocTemplate(buffer, pagesize=letter)
+        elements = []
+
+        # Agregar el título
+        styles = getSampleStyleSheet()
+        title_style = styles.get('Title', None)  # Obtener el estilo 'Title'
+        if not title_style:
+            return HttpResponse("Error al generar el estilo del título", status=500)
+        
+        title = Paragraph(f"Usuarios registrados durante el evento: {event.name_event}", title_style)
+        elements.append(title)
+        elements.append(Spacer(1, 0.25 * inch))  # Espacio entre el título y la tabla
+
+        body_style = styles.get('BodyText', None)
+        if not body_style:
+            return HttpResponse("Error al generar el estilo del cuerpo de la tabla", status=500)
+        user_count_paragraph = Paragraph(
+            f"Cantidad de usuarios registrados: {user_count}<br/><br/>Fecha: {event.initial_date} >< {event.end_date}",
+            body_style
+        )        
+        elements.append(user_count_paragraph)
+        elements.append(Spacer(1, 0.25 * inch))
+        
+        # Definir el ancho disponible para la tabla (ancho total de la página menos márgenes)
+        page_width = letter[0] - 2 * inch  # ancho de la página menos márgenes de 1 pulgada en cada lado
+        num_columns = 8
+        column_width = page_width / num_columns
+
+        # Crear los estilos de párrafo para las celdas
+        cell_style = styles.get("BodyText", None)  # Obtener el estilo 'BodyText'
+        if not cell_style:
+            return HttpResponse("Error al generar el estilo del cuerpo de la tabla", status=500)
+        
+        cell_style.fontSize = 8  # Reducir el tamaño de la fuente
+        cell_style.wordWrap = 'CJK'  # Permitir que el texto se divida en líneas
+
+        # Crear la tabla de usuarios
+        data = [
+            ['Email', 'Name', 'Phone', 'Occupation', 'Company', 'Municipality', 'State', 'Country']
+        ]
+
+        for user in users:
+            data.append([
+                Paragraph(user.get('email', '') or '', cell_style),
+                Paragraph(user.get('name', '') or '', cell_style),
+                Paragraph(user.get('phone', '') or '', cell_style),
+                Paragraph(user.get('occupation', '') or '', cell_style),
+                Paragraph(user.get('company', '') or '', cell_style),
+                Paragraph(user.get('municipality__name', '') or '', cell_style),
+                Paragraph(user.get('state__name', '') or '', cell_style),
+                Paragraph(user.get('country__name', '') or '', cell_style),
+            ])
+
+        table = Table(data, colWidths=[column_width] * num_columns)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), '#d0d0d0'),
+            ('TEXTCOLOR', (0, 0), (-1, 0), '#000000'),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),  # Asegura que el texto esté centrado verticalmente
+        ]))
+
+        elements.append(table)
+        doc.build(elements)
+
+        # Obtener el PDF en memoria y devolverlo como respuesta HTTP
+        pdf = buffer.getvalue()
+        buffer.close()
+
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="reporte_usuarios_{event_id}.pdf"'
+        return response
