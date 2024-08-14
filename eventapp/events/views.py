@@ -64,7 +64,7 @@ class ActiveSponsorsEvent(APIView):
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
         if event is None:
             raise Http404("Event not found.")
-        sponsors = Sponsor.objects.filter(event=event)
+        sponsors = Sponsor.objects.filter(event=event).order_by('id')
         if not sponsors.exists():
             raise NotFound('No sponsors found for this event.')
         
@@ -91,17 +91,17 @@ class ActiveActivityListByUser(APIView):
     def get(self, request, format=None):
         # Obtener el usuario de la base de datos (asegúrate de manejar la excepción si el usuario no existe)
         try:
-            #user = CustomUser.objects.get(pk=id_user)
             user = request.user
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
         now = timezone.localtime(timezone.now()).date()
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
-        if (event == None):
-            return Response({'error': 'Event not found'})
+        if event is None:
+            return Response({'error': 'Event not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        activities = Activity.objects.filter(event = event)
+        # Ordenar las actividades por id
+        activities = Activity.objects.filter(event=event).order_by('id')
         serializer = ActivityUserSelectionSerializer(activities, many=True, context={'user': user})
         
         return Response({'activities': serializer.data}, status=status.HTTP_200_OK)

@@ -22,7 +22,7 @@ class EventSerializer(serializers.ModelSerializer):
 
 class ActivityListSerializer(serializers.ModelSerializer):
     date_time = serializers.SerializerMethodField()
-    
+    room = serializers.SerializerMethodField()
     class Meta:
         model = Activity
         fields = [
@@ -33,17 +33,21 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'date_time',
             'author',
             'event',
+            'room',
         ]
     def get_date_time(self, obj):
         return obj.get_activity_datetime_range()
+    def get_room(self,obj):
+        return obj.room.name_room
 
 class ActivityUserSelectionSerializer(serializers.ModelSerializer):
     is_selected = serializers.SerializerMethodField()
     date_time = serializers.SerializerMethodField()
+    room = serializers.SerializerMethodField()
     
     class Meta:
         model = Activity
-        fields = ['id', 'title_activity', 'slug', 'description', 'date_time', 'author', 'event', 'is_selected']
+        fields = ['id', 'title_activity', 'slug', 'description', 'date_time', 'author', 'event', 'room', 'is_selected']
 
     def get_date_time(self, obj):
         return obj.get_activity_datetime_range()
@@ -52,6 +56,9 @@ class ActivityUserSelectionSerializer(serializers.ModelSerializer):
         user = self.context['user']
         #Agregar al contexto el evento
         return obj.scheduled_activities.filter(user=user).exists()
+    
+    def get_room(self,obj):
+        return obj.room.name_room
     
 class ScheduleSerializer(serializers.ModelSerializer):
     class Meta:
