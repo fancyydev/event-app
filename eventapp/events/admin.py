@@ -12,8 +12,8 @@ class RoomAdmin(admin.ModelAdmin):
     list_display = ('id','name_room',)
 
 class ActivityAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title_activity', 'slug', 'date_time', 'event', 'room']
-    list_filter = ['date_time', 'event']
+    list_display = ['id', 'title_activity', 'slug', 'start_datetime', 'end_datetime', 'event', 'room']
+    list_filter = ['start_datetime', 'event']
     search_fields = ['title_activity', 'description', 'event']
     prepopulated_fields = {'slug': ('title_activity',)}
 

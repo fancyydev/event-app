@@ -7,7 +7,7 @@ from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 
 from .models import Event, Activity, Schedule, Sponsor
-from .serializers import ActivityListSerializer, ActivityUserSelectionSerializer, ScheduleSerializer, SponsorSerializer
+from .serializers import ActivityListSerializer, ActivityUserSelectionSerializer, ScheduleSerializer, SponsorSerializer, EventSerializer
 from accounts.models import CustomUser
 
 from django.utils import timezone
@@ -24,9 +24,7 @@ class ActivityListView(APIView):
     def get(self, request, format=None):
         if Activity.objects.all().exists():
             results = Activity.objects.all()
-            print(results)
             serializer = ActivityListSerializer(results, many=True)
-            print(serializer.data)
             return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'No categories found'}, status=status.HTTP_404_NOT_FOUND)
@@ -51,13 +49,22 @@ class ActivityListByUser(APIView):
         
         return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
 
+class ActiveEvent(APIView):
+    def get(self, request, format=None):
+        now = timezone.localtime(timezone.now()).date()  # Convertir a la hora local
+        event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
+        if event is None:
+            raise Http404("Event not found.")
+        serializer = EventSerializer(event, many=False, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class ActiveSponsorsEvent(APIView):
     def get(self, request, format=None):
-        now  = timezone.now().date()
+        now = timezone.localtime(timezone.now()).date()  # Convertir a la hora local
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
-        if event == None:
+        if event is None:
             raise Http404("Event not found.")
-        sponsors = Sponsor.objects.filter(event = event)
+        sponsors = Sponsor.objects.filter(event=event)
         if not sponsors.exists():
             raise NotFound('No sponsors found for this event.')
         
@@ -67,8 +74,7 @@ class ActiveSponsorsEvent(APIView):
         
 class ActiveProgramEvent(APIView):
     def get(self, request, format=None):
-        
-        now  = timezone.now().date()
+        now = timezone.localtime(timezone.now()).date()
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
         if event == None:
             raise Http404("Event not found.")
@@ -90,8 +96,7 @@ class ActiveActivityListByUser(APIView):
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         
-        now  = timezone.now().date()
-         
+        now = timezone.localtime(timezone.now()).date()
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
         if (event == None):
             return Response({'error': 'Event not found'})

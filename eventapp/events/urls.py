@@ -1,4 +1,4 @@
-from .views import ActivityListView, ActivityListByUser, ActiveActivityListByUser, AssignUserActivity, RemoveUserActivity, ActiveProgramEvent, ActiveSponsorsEvent
+from .views import *
 from django.urls import path
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path('removeUserActivity/<int:id_activity>/', RemoveUserActivity.as_view()),
     path('activeProgramEvent', ActiveProgramEvent.as_view()),
     path('activeSponsorsEvent', ActiveSponsorsEvent.as_view()),
+    path('activeEvent', ActiveEvent.as_view()),
 ]

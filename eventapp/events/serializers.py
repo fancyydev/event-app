@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Event, Activity, Schedule, Sponsor
 
 class EventSerializer(serializers.ModelSerializer):
+    logo_url = serializers.SerializerMethodField()
     class Meta:
         model = Event
         fields = [
@@ -10,10 +11,18 @@ class EventSerializer(serializers.ModelSerializer):
             'description',
             'initial_date',
             'end_date',
+            'logo_url',
             'is_active',
         ]
+    def get_logo_url(self, obj):
+        request = self.context.get('request')
+        if obj.logo and hasattr(obj.logo, 'url'):
+            return request.build_absolute_uri(obj.logo.url)
+        return None
 
 class ActivityListSerializer(serializers.ModelSerializer):
+    date_time = serializers.SerializerMethodField()
+    
     class Meta:
         model = Activity
         fields = [
@@ -25,14 +34,20 @@ class ActivityListSerializer(serializers.ModelSerializer):
             'author',
             'event',
         ]
-        
+    def get_date_time(self, obj):
+        return obj.get_activity_datetime_range()
+
 class ActivityUserSelectionSerializer(serializers.ModelSerializer):
     is_selected = serializers.SerializerMethodField()
+    date_time = serializers.SerializerMethodField()
     
     class Meta:
         model = Activity
         fields = ['id', 'title_activity', 'slug', 'description', 'date_time', 'author', 'event', 'is_selected']
 
+    def get_date_time(self, obj):
+        return obj.get_activity_datetime_range()
+    
     def get_is_selected(self, obj):
         user = self.context['user']
         #Agregar al contexto el evento

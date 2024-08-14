@@ -9,11 +9,12 @@ class Event(models.Model):
     description = models.TextField()
     initial_date = models.DateField()
     end_date = models.DateField()
+    logo = models.ImageField(upload_to='events/logos/', verbose_name="Event Logo")
     program = models.FileField(upload_to='pdfs/')
+    
     @property
     def status(self):
-        now = timezone.now().date()
-        print(now)
+        now = timezone.localtime(timezone.now()).date()
         return self.initial_date <= now <= self.end_date
     
     def is_active(self):
@@ -56,18 +57,41 @@ class Room(models.Model):
     def __str__(self):
         return self.name_room
     
+
 class Activity(models.Model):
     title_activity = models.CharField(max_length=250)
     slug = models.SlugField(max_length=250)
     description = models.TextField()
-    date_time = models.DateTimeField()
+    
+    start_datetime = models.DateTimeField()
+    end_datetime = models.DateTimeField()
+    
     author = models.CharField(max_length=250, default="-")
     
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_activities')
-    # Como puedo hacer para mostrar solo los cuartos que pertenecen al event seleccionado en el admin
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='rooms_activities')
+
+    def clean(self):
+        # Verificar que el cuarto pertenece al evento
+        if self.room.event != self.event:
+            raise ValidationError("La habitación seleccionada no pertenece al evento asociado.")
+        
+        # Verificar que la fecha y hora de fin es posterior a la fecha y hora de inicio
+        if self.end_datetime <= self.start_datetime:
+            raise ValidationError("La fecha y hora de fin deben ser posteriores a la fecha y hora de inicio.")
+
+    def get_activity_datetime_range(self):
+        # Convertir a la zona horaria local
+        start_local = timezone.localtime(self.start_datetime)
+        end_local = timezone.localtime(self.end_datetime)
+        
+        # Formatear la fecha y horas
+        start_date_str = start_local.strftime("%d/%m/%y")
+        start_time_str = start_local.strftime("%H:%M")
+        end_time_str = end_local.strftime("%H:%M")
+        
+        return f"{start_date_str}, {start_time_str}, {end_time_str}"
     
-    #Hacer un clean que verifique si el event relacionado con room es el mismo que el de event si no marcar error
     def __str__(self):
         return self.title_activity
     
