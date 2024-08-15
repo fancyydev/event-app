@@ -3,10 +3,10 @@ from .models import CustomUser
 from geodata.models import Country, State, Municipality
 
 class CustomUserSerializer(serializers.ModelSerializer):
-    country = serializers.CharField()
-    state = serializers.CharField()
-    municipality = serializers.CharField()
-    
+    state = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
+    municipality = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
         fields = [
@@ -14,34 +14,17 @@ class CustomUserSerializer(serializers.ModelSerializer):
             'occupation', 'company', 'ticket', 'created', 'is_active', 'is_superuser', 'password'
         ]
         read_only_fields = ['created']
+
+    def get_state(self, obj):
+        return obj.state.name if obj.state else ""
+
+    def get_country(self, obj):
+        return obj.country.name if obj.country else ""
+
+    def get_municipality(self, obj):
+        return obj.municipality.name if obj.municipality else ""
     
-    def validate(self, data):
-        # Validar y asignar país
-        country = data.get('country')
-        state = data.get('state')
-        municipality = data.get('municipality')
-        
-        try:
-            country = Country.objects.get(id=int(country))
-        except Country.DoesNotExist:
-            raise serializers.ValidationError({'country': 'Country does not exist.'})
-
-        try:
-            state = State.objects.get(id=int(state), country=country)
-        except State.DoesNotExist:
-            state = None
-
-        try:
-            municipality = Municipality.objects.get(id=int(municipality), state=state)
-        except Municipality.DoesNotExist:
-            municipality = None
-            
-        data['country'] = country.name
-        data['state'] = state.name if state else ""
-        data['municipality'] = municipality.name if municipality else ""
-            
-        return data
-        
+    
 class CustomRegisterSerializer(serializers.ModelSerializer):
     country = serializers.CharField()
     state = serializers.CharField(allow_blank=True, required=False)
