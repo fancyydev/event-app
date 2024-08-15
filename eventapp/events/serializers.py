@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Event, Activity, Schedule, Sponsor
+from .models import Event, Activity, Schedule, Sponsor, Images
 
 class EventSerializer(serializers.ModelSerializer):
     logo_url = serializers.SerializerMethodField()
@@ -20,6 +20,24 @@ class EventSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.logo.url)
         return None
 
+class EventImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    class Meta:
+        model = Images
+        fields = [
+            'id',
+            'image_url',
+            'event'
+        ]
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image and hasattr(obj.image, 'url'):
+            return request.build_absolute_uri(obj.image.url)
+        return None
+
+    
+    
+    
 class ActivityListSerializer(serializers.ModelSerializer):
     date_time = serializers.SerializerMethodField()
     room = serializers.SerializerMethodField()

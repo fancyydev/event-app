@@ -39,6 +39,11 @@ class Event(models.Model):
     def save(self, *args, **kwargs):
         self.clean()
         super(Event, self).save(*args, **kwargs)
+        
+class Images(models.Model):
+    image = models.ImageField(upload_to='event/images/', verbose_name="Event Images")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_images')
+    
     
 class Sponsor(models.Model):
     name = models.CharField(max_length=250, verbose_name="Sponsor Name")
@@ -86,7 +91,7 @@ class Activity(models.Model):
         end_local = timezone.localtime(self.end_datetime)
         
         # Formatear la fecha y horas
-        start_date_str = start_local.strftime("%d/%m/%y")
+        start_date_str = start_local.strftime("%d/%m/%Y")
         start_time_str = start_local.strftime("%H:%M")
         end_time_str = end_local.strftime("%H:%M")
         

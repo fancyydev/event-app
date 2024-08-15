@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Event, Activity, Schedule, Room, Sponsor
+from .models import Event, Activity, Schedule, Room, Sponsor, Images
 
 # Register your models here.
 
@@ -28,6 +28,11 @@ class SponsorAdmin(admin.ModelAdmin):
     list_filter = ['name', 'link']
     search_fields = ['name', 'link']
     
+class ImagesAdmin(admin.ModelAdmin):
+    list_display = ['id', 'image', 'event'] 
+    list_filter = ['event']   
+    search_fields = ['id', 'event']
+
     
 # Register the models in the desired order
 admin.site.register(Event, EventAdmin)
@@ -35,5 +40,6 @@ admin.site.register(Room, RoomAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Schedule, ScheduleAdmin)
 admin.site.register(Sponsor, SponsorAdmin)
+admin.site.register(Images, ImagesAdmin)
 
 

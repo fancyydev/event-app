@@ -7,7 +7,7 @@ from rest_framework import permissions
 from rest_framework.exceptions import NotFound
 
 from .models import Event, Activity, Schedule, Sponsor
-from .serializers import ActivityListSerializer, ActivityUserSelectionSerializer, ScheduleSerializer, SponsorSerializer, EventSerializer
+from .serializers import ActivityListSerializer, ActivityUserSelectionSerializer, ScheduleSerializer, SponsorSerializer, EventSerializer, EventImageSerializer
 from accounts.models import CustomUser
 
 from django.utils import timezone
@@ -25,7 +25,7 @@ class ActivityListView(APIView):
         if Activity.objects.all().exists():
             results = Activity.objects.all()
             serializer = ActivityListSerializer(results, many=True)
-            return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'No categories found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -47,7 +47,7 @@ class ActivityListByUser(APIView):
         # Serializar las actividades y pasar el usuario en el contexto
         serializer = ActivityUserSelectionSerializer(activities, many=True, context={'user': user})
         
-        return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ActiveEvent(APIView):
     def get(self, request, format=None):
@@ -83,6 +83,19 @@ class ActiveProgramEvent(APIView):
         else:
             return Response({"detail": "No program found for this event."}, status=status.HTTP_404_NOT_FOUND)
         
+class ActiveEventImages(APIView):
+    def get(self, request, format=None):
+        now = timezone.localtime(timezone.now()).date()
+        event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
+        if event == None:
+            raise Http404("Event not found.")
+        images = event.event_images.filter(event = event).order_by('id')
+        if not images.exists():
+            raise NotFound('No images found for this event.')
+            
+        serializer = EventImageSerializer(images, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
 
 class ActiveActivityListByUser(APIView):
     authentication_classes = [TokenAuthentication]
@@ -104,7 +117,7 @@ class ActiveActivityListByUser(APIView):
         activities = Activity.objects.filter(event=event).order_by('id')
         serializer = ActivityUserSelectionSerializer(activities, many=True, context={'user': user})
         
-        return Response({'activities': serializer.data}, status=status.HTTP_200_OK)
+        return Response( serializer.data, status=status.HTTP_200_OK)
 
 
 class AssignUserActivity(APIView):
@@ -137,7 +150,7 @@ class RemoveUserActivity(APIView):
             activity = Activity.objects.get(id=id_activity)
             schedule = Schedule.objects.get(user=user, activity=activity)
             schedule.delete()
-            return Response({"detail": "Activity successfully unscheduled."}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"detail": "Activity successfully unscheduled."}, status=status.HTTP_200_OK)
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         except Activity.DoesNotExist:

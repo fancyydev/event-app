@@ -10,4 +10,5 @@ urlpatterns = [
     path('activeProgramEvent', ActiveProgramEvent.as_view()),
     path('activeSponsorsEvent', ActiveSponsorsEvent.as_view()),
     path('activeEvent', ActiveEvent.as_view()),
+    path('activeEventImages', ActiveEventImages.as_view()),
 ]
