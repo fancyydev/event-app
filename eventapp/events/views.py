@@ -53,8 +53,6 @@ class ActiveEvent(APIView):
     def get(self, request, format=None):
         now = timezone.localtime(timezone.now()).date()  # Convertir a la hora local
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
-        if event is None:
-            raise Http404("Event not found.")
         serializer = EventSerializer(event, many=False, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
