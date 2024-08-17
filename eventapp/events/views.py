@@ -16,6 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 
 from django.http import FileResponse, Http404
+from django.db.models import Case, When, IntegerField
 # Create your views here.
 
 class ActivityListView(APIView):
@@ -53,29 +54,52 @@ class ActiveEvent(APIView):
     def get(self, request, format=None):
         now = timezone.localtime(timezone.now()).date()  # Convertir a la hora local
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
+        if event is None:
+            return Response({
+                "id": -1,
+                "name_event": "",
+                "description": "",
+                "initial_date": "",
+                "end_date": "",
+                "logo_url": "",
+                "is_active": None
+                }, status=status.HTTP_200_OK)
+            
         serializer = EventSerializer(event, many=False, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ActiveSponsorsEvent(APIView):
     def get(self, request, format=None):
-        now = timezone.localtime(timezone.now()).date()  # Convertir a la hora local
+        now = timezone.localtime(timezone.now()).date()
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
+        
         if event is None:
-            raise Http404("Event not found.")
-        sponsors = Sponsor.objects.filter(event=event).order_by('id')
+            raise NotFound("Event not found.")
+        
+        sponsors = Sponsor.objects.filter(event=event).annotate(
+            tier_order=Case(
+                When(tier='diamante', then=1),
+                When(tier='platino', then=2),
+                When(tier='oro', then=3),  # Si decides agregar 'gold'
+                When(tier='plata', then=4),
+                When(tier='patrocinador', then=5),
+                default=6,
+                output_field=IntegerField(),
+            )
+        ).order_by('tier_order')
+        
         if not sponsors.exists():
             raise NotFound('No sponsors found for this event.')
         
         serializer = SponsorSerializer(sponsors, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
         
-        
 class ActiveProgramEvent(APIView):
     def get(self, request, format=None):
         now = timezone.localtime(timezone.now()).date()
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
         if event == None:
-            raise Http404("Event not found.")
+            raise NotFound("Event not found.")
         if event.program:
             return FileResponse(event.program.open(), as_attachment=True, filename=event.program.name)
         else:
@@ -86,7 +110,7 @@ class ActiveEventImages(APIView):
         now = timezone.localtime(timezone.now()).date()
         event = Event.objects.filter(initial_date__lte=now, end_date__gte=now).first()
         if event == None:
-            raise Http404("Event not found.")
+            raise NotFound("Event not found.")
         images = event.event_images.filter(event = event).order_by('id')
         if not images.exists():
             raise NotFound('No images found for this event.')

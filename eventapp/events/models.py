@@ -46,11 +46,22 @@ class Images(models.Model):
     
     
 class Sponsor(models.Model):
+    SPONSOR_TIERS = [
+        ('diamante', 'Diamante'),
+        ('platino', 'Platino'),
+        ('oro', 'Oro'),
+        ('plata', 'Plata'),
+        ('patrocinador', 'Patrocinador'),
+    ]
+    
     name = models.CharField(max_length=250, verbose_name="Sponsor Name")
     link = models.URLField(max_length=500, verbose_name="Sponsor Link")
     logo = models.ImageField(upload_to='sponsors/logos/', verbose_name="Sponsor Logo")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='event_sponsors')
+    tier = models.CharField(max_length=12, choices=SPONSOR_TIERS, default='patrocinador', verbose_name="Sponsor Tier")
 
+    
+    
     def __str__(self):
         return self.name
     

@@ -24,7 +24,7 @@ class ScheduleAdmin(admin.ModelAdmin):
 
 
 class SponsorAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'link']
+    list_display = ['id', 'name', 'link', 'tier']
     list_filter = ['name', 'link']
     search_fields = ['name', 'link']
     
