@@ -1,6 +1,6 @@
 # event-app
 ## Description
-This is a REST API program developed using Python, Django, and the Django REST Framework for an event management application. It features a customised user model for flexibility and scalability, along with token-based authentication to ensure secure communication. The application supports, sponsors, user login, password recovery, and comprehensive event management, including active events, activities, and schedules for users. Additionally, it offers the implementation of reports.
+This is a REST API program developed using Python, Django, and the Django REST Framework for an event management application. It features a customised user model, along with token-based authentication to ensure secure communication. The application supports, sponsors, user login, password recovery, and comprehensive event management, including the active event, activities, and schedules for users. Additionally, it offers the implementation of reports to see how many people registered in the event period.
 
 ## Requirements
 Here are the recommended versions to use. If you have a different version of Python, feel free to try it. If the program does not work, try using the same version or a similar version.
@@ -45,7 +45,7 @@ pip install -r requirements.txt
 ```
 
 ## Running the program
-To run and test the game:
+To run and test the API:
 - Ensure the virtual environment is active.
 - Use the following command (adjust paths as needed for your system):
 - Go inside of the folder eventapp
@@ -57,5 +57,6 @@ As I use powershell I need to use & to be able to send parameters to the script,
 ```
 & "C:\Users\David Fregoso\Desktop\EVENT-APEAJAL\event-app\venv\Scripts\python.exe" .\manage.py runserver
 ```
-## Explanation
 
+## Explanation
+### Endpoints
