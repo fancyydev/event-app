@@ -33,7 +33,7 @@ import pandas as pd
 #     # Crear el estado asociado al país
 #     State.objects.create(name=estado_formateado, country=country)
 
- # Agregar municipios ----------------------------
+# # Agregar municipios ----------------------------
 # Cargar el archivo Excel que contiene países, estados y municipios
 excel_file = 'C:\\Users\\David Fregoso\\Desktop\\EVENT-APEAJAL\\event-app\\eventapp\\geodata\\municipios.xlsx'
 df = pd.read_excel(excel_file, engine='openpyxl')

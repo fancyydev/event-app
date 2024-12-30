@@ -8,7 +8,7 @@ from .models import CustomUser
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authentication import TokenAuthentication
 
 from django.core.mail import send_mail
@@ -103,6 +103,9 @@ class PasswordRecovery(APIView):
         return Response({"detail": "Password reset email has been sent."}, status=status.HTTP_200_OK)
 
 class GenerateReportView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
     def get(self, request, event_id):
         # Obtener el evento
         try:
@@ -195,6 +198,9 @@ class GenerateReportView(APIView):
         return response
     
 class GenerateReportExcelView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    
     def get(self, request, event_id):
         # Obtener el evento
         try:

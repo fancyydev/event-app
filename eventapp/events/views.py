@@ -19,36 +19,36 @@ from django.http import FileResponse, Http404
 from django.db.models import Case, When, IntegerField
 # Create your views here.
 
-class ActivityListView(APIView):
-    #El slug tiene que ser siempre el tercer parametro de la funcion get
-    permission_classes = (permissions.AllowAny,)
-    def get(self, request, format=None):
-        if Activity.objects.all().exists():
-            results = Activity.objects.all()
-            serializer = ActivityListSerializer(results, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'No categories found'}, status=status.HTTP_404_NOT_FOUND)
+# class ActivityListView(APIView):
+#     #El slug tiene que ser siempre el tercer parametro de la funcion get
+#     permission_classes = (permissions.AllowAny,)
+#     def get(self, request, format=None):
+#         if Activity.objects.all().exists():
+#             results = Activity.objects.all()
+#             serializer = ActivityListSerializer(results, many=True)
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         else:
+#             return Response({'error': 'No categories found'}, status=status.HTTP_404_NOT_FOUND)
 
-class ActivityListByUser(APIView):
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+# class ActivityListByUser(APIView):
+#     authentication_classes = [TokenAuthentication]
+#     permission_classes = [IsAuthenticated]
     
-    def get(self, request, format=None):
-        # Obtener el usuario de la base de datos (asegúrate de manejar la excepción si el usuario no existe)
-        try:
-            #user = CustomUser.objects.get(pk=id_user)
-            user = request.user
-        except CustomUser.DoesNotExist:
-            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+#     def get(self, request, format=None):
+#         # Obtener el usuario de la base de datos (asegúrate de manejar la excepción si el usuario no existe)
+#         try:
+#             #user = CustomUser.objects.get(pk=id_user)
+#             user = request.user
+#         except CustomUser.DoesNotExist:
+#             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Obtener todas las actividades
-        activities = Activity.objects.all()
+#         # Obtener todas las actividades
+#         activities = Activity.objects.all()
 
-        # Serializar las actividades y pasar el usuario en el contexto
-        serializer = ActivityUserSelectionSerializer(activities, many=True, context={'user': user})
+#         # Serializar las actividades y pasar el usuario en el contexto
+#         serializer = ActivityUserSelectionSerializer(activities, many=True, context={'user': user})
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class ActiveEvent(APIView):
     def get(self, request, format=None):
