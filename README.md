@@ -61,82 +61,182 @@ As I use powershell I need to use & to be able to send parameters to the script,
 ## Explanation
 ### Endpoints
 
-#### **List of all activities:**
-- **Endpoint:** `http://127.0.0.1:8000/api/event/listActivities`
-- **Method:** `GET`
-- **Description:** 
-- **Example Request:**
-- **Example Response:**
-
-
-#### **List of all activities by user:** 
-(Tal vez eliminar)
-- **Endpoint:** `http://127.0.0.1:8000/api/event/listActivitiesByUser`
-- **Method:** `GET`
-- **Description:** 
-- **Example Request:**
-- **Example Response:**
-
-#### **List of all activities by user for active event:**
+#### **List of all activities by user for the active event:**
 - **Endpoint:** `http://127.0.0.1:8000/api/event/listActiveActivitiesByUser`
 - **Method:** `GET`
-- **Description:** 
+- **Description:** Retrieves a list of all activities scheduled for the active event that are associated with the authenticated user.
 - **Example Request:**
+```json
+{
+	"Authorization": "Token 7042624ee3df404d7a67d95f3c0d177240227e99"
+}
+```
 - **Example Response:**
-  
+```json
+[
+    {
+        "id": 1,
+        "title_activity": "Justificación de la poda en aguacate",
+        "slug": "justificacion-de-la-poda-en-aguacate",
+        "description": "BIOESTIMULANDO ANDO",
+        "date_time": "28/08/2024, 09:00, 10:00",
+        "author": "M. C. Mauricio Navarro Garcia",
+        "event": 2,
+        "room": "Sala 1",
+        "is_selected": false
+    },
+    {
+        "id": 2,
+        "title_activity": "Portainjertos Clonales: Presente y futuro en la industria del aguacate",
+        "slug": "portainjertos-clonales-presente-y-futuro-en-la-industria-del-aguacate",
+        "description": "BROKAW NURSERY",
+        "date_time": "28/08/2024, 10:00, 10:30",
+        "author": "Ing. Consuelo Fernández Noguera",
+        "event": 2,
+        "room": "Sala 1",
+        "is_selected": false
+    },
+    ...
+]
+```
 #### **Details of the active event:**
 - **Endpoint:** `http://127.0.0.1:8000/api/event/activeEvent`
 - **Method:** `GET`
-- **Description:** 
-- **Example Request:**
+- **Description:** Provides detailed information about the currently active event, including its name, description, duration, and logo.
 - **Example Response:**
+```json
+{
+    "id": 2,
+    "name_event": "8 Congreso de aguacate Jalisco 2024",
+    "description": "Este congreso reúne a expertos, productores, y líderes de la industria para compartir conocimientos, estrategias y avances en la producción, comercialización y sostenibilidad del aguacate. Jalisco, conocido como uno de los principales productores de aguacate en México, es el escenario perfecto para este evento de alto perfil.",
+    "initial_date": "2024-08-16",
+    "end_date": "2024-12-30",
+    "logo_url": "http://127.0.0.1:8000/media/events/logos/logo_congreso.png",
+    "is_active": true
+}
+```
 
 #### **Images of the active event schedule**
 - **Endpoint:** `http://127.0.0.1:8000/api/event/activeEventImages`
 - **Method:** `GET`
-- **Description:** 
-- **Example Request:**
+- **Description:** Retrieves a list of images representing the schedule for the active event.
 - **Example Response:**
+```json
+[
+    {
+        "id": 1,
+        "image_url": "http://127.0.0.1:8000/media/event/images/SALA_1.png",
+        "event": 2
+    },
+    {
+        "id": 2,
+        "image_url": "http://127.0.0.1:8000/media/event/images/SALA_2.jpg",
+        "event": 2
+    },
+    ...
+]
+```
 
 #### **Schedule of the active event**
 - **Endpoint:** `http://127.0.0.1:8000/api/event/activeProgramEvent`
 - **Method:** `GET`
-- **Description:** 
-- **Example Request:**
-- **Example Response:**
+- **Description:** Automatically downloads the complete schedule of the active event in PDF format.
 
 #### **List of sponsors for the active event**
 - **Endpoint:** `http://127.0.0.1:8000/api/event/activeSponsorsEvent`
 - **Method:** `GET`
-- **Description:** 
-- **Example Request:**
+- **Description:** Returns a list of sponsors for the active event, including their names, links, and logos.
 - **Example Response:**
+```json
+[
+    {
+        "name": "msc",
+        "link": "https://www.msc.com/",
+        "logo_url": "http://127.0.0.1:8000/media/sponsors/logos/MSC-1.png",
+        "event": 2
+    },
+    {
+        "name": "Gonzamex",
+        "link": "https://www.agrogonzamex.com/es",
+        "logo_url": "http://127.0.0.1:8000/media/sponsors/logos/AGROGON-1.png",
+        "event": 2
+    },
+    ...
+]
+```
 
 #### **List of countries, states and municipalities:**
 - **Endpoint:** `http://127.0.0.1:8000/api/geo/locationList`
 - **Method:** `GET`
-- **Description:** 
-- **Example Request:**
+- **Description:** Provides a hierarchical list of registered countries, states, and their corresponding municipalities. 
 - **Example Response:**
+```json
+[
+    {
+        "id": 1,
+        "name": "México",
+        "states": [
+            {
+                "id": 1,
+                "name": "Jalisco",
+                "municipalities": [
+                    {
+                        "id": 1,
+                        "name": "Acatic"
+                    },
+                    ...
+                ]
+            },
+            ...
+        ]
+    },
+    {
+        "id": 2,
+        "name": "República de china",
+        "states": [
+            {
+                "id": 8,
+                "name": "Shangai",
+                "municipalities": [
+                    {
+                        "id": 639,
+                        "name": "Shangai"
+                    },
+                    ...
+                ]
+            },
+            ...
+        ]
+    },
+]
+```
 
 #### **PDF report showing the registration count for the active event period:**
-- **Endpoint:** `http://127.0.0.1:8000/api/user/report/2/`
+- **Endpoint:** `http://127.0.0.1:8000/api/user/report/<int:event_id>/`
 - **Method:** `GET`
-- **Description:** 
+- **Description:** Generates a PDF report with the number and data of registered users during the active event period. Accessible only with an administrator token, and the file is downloaded automatically based on the event ID provided.
 - **Example Request:**
-- **Example Response:**
+```json
+{
+	"Authorization": "Token 7042624ee3df404d7a67d95f3c0d177240227e99"
+}
+```
 
 #### **EXCEL report showing the registration count for the active event period**
-- **Endpoint:** `http://127.0.0.1:8000/api/user/reportExcel/2/`
+- **Endpoint:** `http://127.0.0.1:8000/api/user/reportExcel/<int:event_id>/`
 - **Method:** `GET`
-- **Description:** 
+- **Description:**  Generates a EXCEL report with the number and data of registered users during the active event period. Accessible only with an administrator token, and the file is downloaded automatically based on the event ID provided.
 - **Example Request:**
-- **Example Response:**
+```json
+{
+	"Authorization": "Token 7042624ee3df404d7a67d95f3c0d177240227e99"
+}
+```
 
 #### **login:**
 - **Endpoint:** `http://127.0.0.1:8000/api/user/login`
 - **Method:** `POST`
-- **Description:** Logs a user in by validating their credentials and obtaining their authentication token and information.
+- **Description:** Authenticates a user by validating their credentials and returns their authentication token and account information.
 - **Example Request:**
   ```json
   {
@@ -168,14 +268,14 @@ As I use powershell I need to use & to be able to send parameters to the script,
 #### **Register:**
 - **Endpoint:** `http://127.0.0.1:8000/api/user/register`
 - **Method:** `POST`
-- **Description:** 
+- **Description:** Registers a new user by creating an account with their provided details.
 - **Example Request:**
   ```json
   {
     "email": "user@gmail.com",
     "name": "user",
     "phone": "3751197174",
-    "municipality": "Ciudad Guzman",
+    "municipality": "Zapotlán el grande",
     "state": "Jalisco",
     "country": "México",
     "occupation": "Developer",
@@ -192,22 +292,54 @@ As I use powershell I need to use & to be able to send parameters to the script,
 #### **Password recovery:**
 - **Endpoint:** `http://127.0.0.1:8000/api/user/passwordRecovery`
 - **Method:** `POST`
-- **Description:** 
+- **Description:** Sends a password recovery email containing a link for the user to reset their password.
 - **Example Request:**
+```json
+{
+    "email": "davidfregosoleon12@gmail.com"
+}
+```
 - **Example Response:**
+```json
+{
+    "detail": "Password reset email has been sent."
+}
+```
 
 #### **Schedule activities:**
-- **Endpoint:** `http://127.0.0.1:8000/api/event/assignUserActivity/1/`
+- **Endpoint:** `http://127.0.0.1:8000/api/event/assignUserActivity/<int:id_activity>/`
 - **Method:** `POST`
-- **Description:** 
+- **Description:** Assigns an activity to the authenticated user based on the activity ID provided.
 - **Example Request:**
+```json
+{
+	"Authorization": "Token 7042624ee3df404d7a67d95f3c0d177240227e99"
+}
+```
 - **Example Response:**
+```json
+{
+    "id": 5,
+    "user": 17,
+    "activity": 1,
+    "created_at": "2024-12-30T14:46:33.006898-06:00"
+}
+```
 
 #### **Remove activities:**
-- **Endpoint:** `http://127.0.0.1:8000/api/event/removeUserActivity/1/`
+- **Endpoint:** `http://127.0.0.1:8000/api/event/removeUserActivity/<int:id_activity>/`
 - **Method:** `DEL`
 - **Description:** 
-- **Example Request:**
+- **Example Request:** Removes an activity from the authenticated user’s schedule based on the activity ID provided.
+```json
+{
+	"Authorization": "Token 7042624ee3df404d7a67d95f3c0d177240227e99"
+}
+```
 - **Example Response:**
-
+```json
+{
+    "detail": "Activity successfully unscheduled."
+}
+```
 
