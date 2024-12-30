@@ -60,3 +60,24 @@ As I use powershell I need to use & to be able to send parameters to the script,
 
 ## Explanation
 ### Endpoints
+
+**List of all activities:**
+
+**List of all activities by user:**
+
+**List of all activities by user for active event:**
+
+**Details of the active event:**
+
+**Images of the active event schedule**
+
+**List of sponsors for the active event**
+
+**List of sponsors for the active event**
+
+**List of countries, states and municipalities:**
+
+**PDF report showing the registration count for the active event period:**
+**EXCEL report showing the registration count for the active event period**
+
+
