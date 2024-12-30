@@ -61,23 +61,153 @@ As I use powershell I need to use & to be able to send parameters to the script,
 ## Explanation
 ### Endpoints
 
-**List of all activities:**
+#### **List of all activities:**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/listActivities`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**List of all activities by user:**
 
-**List of all activities by user for active event:**
+#### **List of all activities by user:** 
+(Tal vez eliminar)
+- **Endpoint:** `http://127.0.0.1:8000/api/event/listActivitiesByUser`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**Details of the active event:**
+#### **List of all activities by user for active event:**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/listActiveActivitiesByUser`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
+  
+#### **Details of the active event:**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/activeEvent`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**Images of the active event schedule**
+#### **Images of the active event schedule**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/activeEventImages`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**List of sponsors for the active event**
+#### **Schedule of the active event**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/activeProgramEvent`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**List of sponsors for the active event**
+#### **List of sponsors for the active event**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/activeSponsorsEvent`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**List of countries, states and municipalities:**
+#### **List of countries, states and municipalities:**
+- **Endpoint:** `http://127.0.0.1:8000/api/geo/locationList`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
-**PDF report showing the registration count for the active event period:**
-**EXCEL report showing the registration count for the active event period**
+#### **PDF report showing the registration count for the active event period:**
+- **Endpoint:** `http://127.0.0.1:8000/api/user/report/2/`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
+
+#### **EXCEL report showing the registration count for the active event period**
+- **Endpoint:** `http://127.0.0.1:8000/api/user/reportExcel/2/`
+- **Method:** `GET`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
+
+#### **login:**
+- **Endpoint:** `http://127.0.0.1:8000/api/user/login`
+- **Method:** `POST`
+- **Description:** Logs a user in by validating their credentials and obtaining their authentication token and information.
+- **Example Request:**
+  ```json
+  {
+    "email": "user@gmail.com",
+    "password": "contraseña"
+  }
+  ```
+- **Example Response:**
+  ```json
+  {
+    "token": "7a5a0cdb130701498502385117f3530ef4aa9057",
+    "user": {
+        "email": "user@gmail.com",
+        "name": "user",
+        "phone": "3751197174",
+        "municipality": "Zapotlán el grande",
+        "state": "Jalisco",
+        "country": "México",
+        "occupation": "Developer",
+        "company": "Tech Corp",
+        "ticket": 12345,
+        "created": "2024-12-29T19:25:59.177314-06:00",
+        "is_active": true,
+        "is_superuser": false,
+        "password": "pbkdf2_sha256$600000$xKQrri1e2LAutUYrRbCRrJ$E2SHIo8rPGuO/LS896bPnG8jo/Mb9XVrDuF53I8aTIM="
+    }
+  }
+  ```
+#### **Register:**
+- **Endpoint:** `http://127.0.0.1:8000/api/user/register`
+- **Method:** `POST`
+- **Description:** 
+- **Example Request:**
+  ```json
+  {
+    "email": "user@gmail.com",
+    "name": "user",
+    "phone": "3751197174",
+    "municipality": "Ciudad Guzman",
+    "state": "Jalisco",
+    "country": "México",
+    "occupation": "Developer",
+    "company": "Tech Corp",
+    "ticket": 12345,
+    "password": "contraseña"
+  }
+  ```
+- **Example Response:**
+  ```json
+  "d777a7691dc6c7416b096d5d0b51e53acf641a16"
+  ```
+
+#### **Password recovery:**
+- **Endpoint:** `http://127.0.0.1:8000/api/user/passwordRecovery`
+- **Method:** `POST`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
+
+#### **Schedule activities:**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/assignUserActivity/1/`
+- **Method:** `POST`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
+
+#### **Remove activities:**
+- **Endpoint:** `http://127.0.0.1:8000/api/event/removeUserActivity/1/`
+- **Method:** `DEL`
+- **Description:** 
+- **Example Request:**
+- **Example Response:**
 
 
