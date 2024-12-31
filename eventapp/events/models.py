@@ -9,7 +9,7 @@ class Event(models.Model):
     description = models.TextField()
     initial_date = models.DateField()
     end_date = models.DateField()
-    logo = models.ImageField(upload_to='events/logos/', verbose_name="Event Logo")
+    logo = models.ImageField(upload_to='events/logos/', verbose_name="Event Logo", null=True)
     program = models.FileField(upload_to='pdfs/')
     
     @property

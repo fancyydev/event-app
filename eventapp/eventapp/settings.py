@@ -84,23 +84,23 @@ WSGI_APPLICATION = 'eventapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'eventdb',           # Nombre de la base de datos
-        'USER': 'postgres',          # Nombre de usuario de PostgreSQL
-        'PASSWORD': 'P@sSw0rd!D8#42Xyz', # Contraseña del usuario de PostgreSQL
-        'HOST': 'localhost',         # Dirección del servidor de base de datos
-        'PORT': '5432',              # Puerto del servidor de PostgreSQL (por defecto es 5432)
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'eventdb2.db',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'eventdb',           # Nombre de la base de datos
+#         'USER': 'postgres',          # Nombre de usuario de PostgreSQL
+#         'PASSWORD': 'P@sSw0rd!D8#42Xyz', # Contraseña del usuario de PostgreSQL
+#         'HOST': 'localhost',         # Dirección del servidor de base de datos
+#         'PORT': '5432',              # Puerto del servidor de PostgreSQL (por defecto es 5432)
+#     }
+# }
 
 
 # Password validation
