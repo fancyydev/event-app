@@ -48,7 +48,7 @@ pip install -r requirements.txt
 To run and test the API:
 - Ensure the virtual environment is active.
 - Use the following command (adjust paths as needed for your system):
-- Go inside of the folder eventapp
+- Go inside of the folder /event-app/eventapp
 ```
 cd .\eventapp\
 ```
